@@ -11,5 +11,8 @@
     "url": "git+https://github.com/louisan42/fragments.git"
   },
   "author": "Louis Amoah-Nuamah",
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "prettier": "2.6.2"
+  }
 }
