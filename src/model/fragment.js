@@ -16,6 +16,30 @@ const {
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
     // TODO
+    if (type == undefined) {
+      throw new Error('type is required');
+    } else if (!Fragment.isSupportedType(type)) {
+      throw new Error('type is not supported');
+    } else {
+      this.type = type;
+    }
+    if (ownerId == undefined) {
+      throw new Error('ownerId is required');
+    } else {
+      this.ownerId = ownerId;
+    }
+    this.id = id || nanoid();
+    this.created = created || new Date();
+    this.updated = updated || new Date();
+    if (typeof size === 'number') {
+      if (size >= 0) {
+        this.size = size || 0;
+      } else {
+        throw new Error('size cannot be negative');
+      }
+    } else {
+      throw new Error('size must be a number');
+    }
   }
 
   /**
@@ -70,7 +94,14 @@ class Fragment {
    * @returns Promise
    */
   async setData(data) {
-    // TODO
+    try {
+      const d = await writeFragmentData(this.ownerId, this.id, data);
+      return d != undefined
+        ? Promise.resolve(d)
+        : Promise.reject(new Error('Failed to write fragment data'));
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   /**
@@ -88,16 +119,15 @@ class Fragment {
    * @returns {boolean} true if fragment's type is text/*
    */
   get isText() {
-    // TODO
+    const regexPattern = /^text\//gim;
+    return regexPattern.test(this.mimeType);
   }
 
   /**
    * Returns the formats into which this fragment type can be converted
    * @returns {Array<string>} list of supported mime types
    */
-  get formats() {
-    // TODO
-  }
+  get formats() {}
 
   /**
    * Returns true if we know how to work with this content type
@@ -105,7 +135,20 @@ class Fragment {
    * @returns {boolean} true if we support this Content-Type (i.e., type/subtype)
    */
   static isSupportedType(value) {
-    // TODO
+    const { type } = contentType.parse(value);
+    const validTypes = [
+      `text/plain`,
+      `text/markdown`,
+      `text/html`,
+      `application/json`,
+      `image/png`,
+      `image/jpeg`,
+      `image/webp`,
+      `image/gif`,
+    ];
+    return validTypes.includes(type);
+
+    //return this.formats().includes(type);
   }
 }
 
