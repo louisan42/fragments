@@ -12,10 +12,23 @@ const {
   listFragments,
   deleteFragment,
 } = require('./data');
+const logger = require('../logger');
+
+const validTypes = [
+  `text/plain`,
+  `text/markdown`,
+  `text/html`,
+  `application/json`,
+  `image/png`,
+  `image/jpeg`,
+  `image/webp`,
+  `image/gif`,
+];
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
     // TODO
+
     if (type == undefined) {
       throw new Error('type is required');
     } else if (!Fragment.isSupportedType(type)) {
@@ -29,8 +42,8 @@ class Fragment {
       this.ownerId = ownerId;
     }
     this.id = id || nanoid();
-    this.created = created || new Date();
-    this.updated = updated || new Date();
+    this.created = created || new Date().toISOString();
+    this.updated = updated || new Date().toISOString();
     if (typeof size === 'number') {
       if (size >= 0) {
         this.size = size || 0;
@@ -49,7 +62,13 @@ class Fragment {
    * @returns Promise<Array<Fragment>>
    */
   static async byUser(ownerId, expand = false) {
-    // TODO
+    try {
+      const f = await listFragments(ownerId, expand);
+      return Promise.resolve(f);
+    } catch (error) {
+      logger.error(error);
+      return Promise.resolve([]);
+    }
   }
 
   /**
@@ -60,6 +79,16 @@ class Fragment {
    */
   static async byId(ownerId, id) {
     // TODO
+    try {
+      const f = await readFragment(ownerId, id);
+      if (!f) {
+        throw new Error('Fragment not found');
+      }
+      return Promise.resolve(f);
+    } catch (error) {
+      logger.error(error);
+      return Promise.reject(new Error(error));
+    }
   }
 
   /**
@@ -69,7 +98,12 @@ class Fragment {
    * @returns Promise
    */
   static delete(ownerId, id) {
-    // TODO
+    try {
+      deleteFragment(ownerId, id);
+      return Promise.resolve();
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   /**
@@ -78,6 +112,14 @@ class Fragment {
    */
   save() {
     // TODO
+    try {
+      this.updated = new Date().toISOString();
+      writeFragment(this);
+      return Promise.resolve();
+    } catch (error) {
+      logger.error(error);
+      return Promise.reject(new Error(error));
+    }
   }
 
   /**
@@ -86,6 +128,14 @@ class Fragment {
    */
   getData() {
     // TODO
+    try {
+      const data = readFragmentData(this.ownerId, this.id);
+      return data != undefined
+        ? Promise.resolve(data)
+        : Promise.reject(new Error('Failed to read fragment'));
+    } catch (error) {
+      logger.error(error);
+    }
   }
 
   /**
@@ -94,13 +144,16 @@ class Fragment {
    * @returns Promise
    */
   async setData(data) {
+    if (!Buffer.isBuffer(data)) {
+      throw new Error('data must be a Buffer');
+    }
     try {
+      this.size = data.byteLength;
+      this.updated = new Date().toISOString();
       const d = await writeFragmentData(this.ownerId, this.id, data);
-      return d != undefined
-        ? Promise.resolve(d)
-        : Promise.reject(new Error('Failed to write fragment data'));
+      return Promise.resolve(d);
     } catch (error) {
-      console.error(error);
+      logger.error(error);
     }
   }
 
@@ -127,7 +180,15 @@ class Fragment {
    * Returns the formats into which this fragment type can be converted
    * @returns {Array<string>} list of supported mime types
    */
-  get formats() {}
+  get formats() {
+    let formatsList = [];
+    validTypes.forEach((type) => {
+      if (this.mimeType.startsWith(type)) {
+        formatsList.push(type);
+      }
+    });
+    return formatsList;
+  }
 
   /**
    * Returns true if we know how to work with this content type
@@ -136,19 +197,7 @@ class Fragment {
    */
   static isSupportedType(value) {
     const { type } = contentType.parse(value);
-    const validTypes = [
-      `text/plain`,
-      `text/markdown`,
-      `text/html`,
-      `application/json`,
-      `image/png`,
-      `image/jpeg`,
-      `image/webp`,
-      `image/gif`,
-    ];
     return validTypes.includes(type);
-
-    //return this.formats().includes(type);
   }
 }
 

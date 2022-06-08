@@ -187,7 +187,7 @@ describe('Fragment class', () => {
       const ownerId = '7777';
       const fragment = new Fragment({ ownerId, type: 'text/plain', size: 0 });
       const modified1 = fragment.updated;
-      await wait();
+      await wait(1000);
       await fragment.save();
       const fragment2 = await Fragment.byId(ownerId, fragment.id);
       expect(Date.parse(fragment2.updated)).toBeGreaterThan(Date.parse(modified1));
@@ -199,7 +199,7 @@ describe('Fragment class', () => {
       const fragment = new Fragment({ ownerId, type: 'text/plain', size: 0 });
       await fragment.save();
       const modified1 = fragment.updated;
-      await wait();
+      await wait(1000);
       await fragment.setData(data);
       await wait();
       const fragment2 = await Fragment.byId(ownerId, fragment.id);
@@ -226,7 +226,7 @@ describe('Fragment class', () => {
       expect(await Fragment.byUser(ownerId, true)).toEqual([fragment]);
     });
 
-    test('setData() throws if not give a Buffer', () => {
+    test('setData() throws if not given a Buffer', () => {
       const fragment = new Fragment({ ownerId: '123', type: 'text/plain', size: 0 });
       expect(() => fragment.setData()).rejects.toThrow();
     });
