@@ -63,11 +63,9 @@ class Fragment {
    */
   static async byUser(ownerId, expand = false) {
     try {
-      const f = await listFragments(ownerId, expand);
-      return Promise.resolve(f);
+      return await listFragments(ownerId, expand);
     } catch (error) {
       logger.error(error);
-      return Promise.resolve([]);
     }
   }
 
@@ -84,10 +82,10 @@ class Fragment {
       if (!f) {
         throw new Error('Fragment not found');
       }
-      return Promise.resolve(f);
+      return f;
     } catch (error) {
       logger.error(error);
-      return Promise.reject(new Error(error));
+      throw new Error(error);
     }
   }
 
@@ -99,8 +97,7 @@ class Fragment {
    */
   static delete(ownerId, id) {
     try {
-      deleteFragment(ownerId, id);
-      return Promise.resolve();
+      return deleteFragment(ownerId, id);
     } catch (error) {
       logger.error(error);
     }
@@ -114,11 +111,9 @@ class Fragment {
     // TODO
     try {
       this.updated = new Date().toISOString();
-      writeFragment(this);
-      return Promise.resolve();
+      return writeFragment(this);
     } catch (error) {
       logger.error(error);
-      return Promise.reject(new Error(error));
     }
   }
 
@@ -130,9 +125,10 @@ class Fragment {
     // TODO
     try {
       const data = readFragmentData(this.ownerId, this.id);
-      return data != undefined
-        ? Promise.resolve(data)
-        : Promise.reject(new Error('Failed to read fragment'));
+      // return data != undefined
+      //   ? Promise.resolve(data)
+      //   : Promise.reject(new Error('Failed to read fragment'));
+      return data;
     } catch (error) {
       logger.error(error);
     }
@@ -150,8 +146,7 @@ class Fragment {
     try {
       this.size = data.byteLength;
       this.updated = new Date().toISOString();
-      const d = await writeFragmentData(this.ownerId, this.id, data);
-      return Promise.resolve(d);
+      return await writeFragmentData(this.ownerId, this.id, data);
     } catch (error) {
       logger.error(error);
     }

@@ -22,3 +22,15 @@ describe('GET /v1/fragments', () => {
 
   // TODO: we'll need to add tests to check the contents of the fragments array later
 });
+
+describe('GET /v1/fragments/?expand=1', () => {
+  test('authenticated users get a expanded array of metadata', async () => {
+    for (let i = 0; i < 3; i++) {
+      const res = await request(app)
+        .post('/v1/fragments/?expand=1')
+        .auth('user1@email.com', 'password1')
+        .set('Content-Type', 'text/plain')
+        .send(`This is a fragment - ${i}`);
+    }
+  });
+});

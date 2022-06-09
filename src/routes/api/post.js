@@ -19,6 +19,9 @@ module.exports = async (req, res) => {
     });
     await fragment.save();
     await fragment.setData(data);
+    const location = `${process.env.API_URL}/v1/fragments/${fragment.id}`;
+    req.location(location);
+    logger.debug(`POST location: ${location}`);
     res.status(201).send(createSuccessResponse({ fragment }));
   } catch (error) {
     logger.error(error);
