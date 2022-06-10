@@ -2,7 +2,8 @@
 
 const { Fragment } = require('../../model/fragment');
 const { createSuccessResponse, createErrorResponse } = require('../../response');
-const { logger } = require('../../logger');
+const logger = require('../../logger');
+const { convertType } = require('../../utils');
 
 /**
  * Get a list of fragments for the current user
@@ -19,7 +20,7 @@ module.exports.getAll = async (req, res) => {
 
 // Get a single fragment by id
 // GET /v1/fragments/:id(.ext) optional extension
-module.exports.getOne = async (req, res, next) => {
+module.exports.getOne = async (req, res) => {
   try {
     const user = req.user;
     let id = req.params.id;
@@ -29,12 +30,29 @@ module.exports.getOne = async (req, res, next) => {
       id = id.substring(0, dotIndex);
     }
     logger.debug(`id: ${id}\next: ${ext}\nuser: ${user}`);
-    const fragment = await Fragment.byId(user, id);
-    const fragmentData = await new Fragment(fragment).getData();
+    const fMetadata = await Fragment.byId(user, id);
 
-    res.status(200).send(createSuccessResponse({ fragment: fragment }));
+    const fragment = new Fragment(fMetadata);
+
+    //const type = fragment.mimeType;
+    if (ext) {
+      try {
+        var { type, data } = await convertType(ext, fragment);
+        res.setHeader('Content-Type', type);
+        res.status(200).send(data);
+      } catch (error) {
+        logger.error(error);
+        res.status(415).send(createErrorResponse(415, 'Unsupported extension type'));
+      }
+    } else {
+      var fData = await fragment.getData();
+      res.setHeader('Content-Type', fragment.type);
+      res.status(200).send(fData);
+    }
+
+    logger.debug(`type: ${type ? type : fragment.type}\ndata: ${data ? data : fData}`);
   } catch (error) {
     logger.debug(error);
-    next(error);
+    res.status(404).send(createErrorResponse(404, 'Fragment not found'));
   }
 };

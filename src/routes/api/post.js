@@ -2,7 +2,7 @@
 const logger = require('../../logger');
 const { Fragment } = require('../../model/fragment');
 const { createSuccessResponse, createErrorResponse } = require('../../response');
-module.exports = async (req, res) => {
+module.exports = async (req, res, next) => {
   const data = req.body;
   const type = req.headers['content-type'];
   const user = req.user;
@@ -28,6 +28,7 @@ module.exports = async (req, res) => {
         .send(createSuccessResponse({ fragments: fragment }));
     } catch (error) {
       logger.error(error);
+      next(error);
     }
   }
 };
