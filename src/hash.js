@@ -15,4 +15,4 @@
 
 const crypto = require('crypto');
 
-module.exports = (email) => crypto.createHash('sha256').update(email).digest('hex');
+module.exports = (email) => crypto.createHash('sha256').update(email).digest('hex').slice(0, 8);

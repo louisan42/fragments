@@ -14,16 +14,7 @@ const {
 } = require('./data');
 const logger = require('../logger');
 
-const validTypes = [
-  `text/plain`,
-  `text/markdown`,
-  `text/html`,
-  `application/json`,
-  `image/png`,
-  `image/jpeg`,
-  `image/webp`,
-  `image/gif`,
-];
+const { validTypes } = require('../utils');
 
 class Fragment {
   constructor({ id, ownerId, created, updated, type, size = 0 }) {
@@ -125,9 +116,7 @@ class Fragment {
     // TODO
     try {
       const data = readFragmentData(this.ownerId, this.id);
-      // return data != undefined
-      //   ? Promise.resolve(data)
-      //   : Promise.reject(new Error('Failed to read fragment'));
+
       return data;
     } catch (error) {
       logger.error(error);

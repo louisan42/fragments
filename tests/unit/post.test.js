@@ -11,6 +11,17 @@ describe('POST /v1/fragments', () => {
   test('incorrect credentials are denied', () =>
     request(app).post('/v1/fragments').auth('invalid@email.com', 'incorrect_password').expect(401));
 
+  // Unsupported content types should be return 415
+  test('unsupported content types return 415', async () => {
+    const res = await request(app)
+      .post('/v1/fragments')
+      .set('Content-Type', 'application/msword')
+      .auth('user1@email.com', 'password1')
+      .send('This is a fragment');
+    expect(res.statusCode).toBe(415);
+    expect(res.body.status).toBe('error');
+  });
+
   // Using a valid username/password pair to test post request
   test('authenticated users can post fragments', async () => {
     const res = await request(app)

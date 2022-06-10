@@ -23,14 +23,51 @@ describe('GET /v1/fragments', () => {
   // TODO: we'll need to add tests to check the contents of the fragments array later
 });
 
-describe('GET /v1/fragments/?expand=1', () => {
+describe('GET /v1/fragments/?expand=1 || expand value not included', () => {
   test('authenticated users get a expanded array of metadata', async () => {
-    for (let i = 0; i < 3; i++) {
-      const res = await request(app)
-        .post('/v1/fragments/?expand=1')
-        .auth('user1@email.com', 'password1')
-        .set('Content-Type', 'text/plain')
-        .send(`This is a fragment - ${i}`);
-    }
+    await request(app)
+      .post('/v1/fragments/')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send(`This is a fragment`);
+
+    const res = await request(app)
+      .get('/v1/fragments/?expand=1')
+      .auth('user1@email.com', 'password1');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.fragments).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: expect.any(String),
+          created: expect.any(String),
+          updated: expect.any(String),
+          size: expect.any(Number),
+          ownerId: expect.any(String),
+          id: expect.any(String),
+        }),
+      ])
+    );
+  });
+
+  test('authenticated users get the id of metadata(not expanded)', async () => {
+    await request(app)
+      .post('/v1/fragments/')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send(`This is a fragment`);
+    // now request for data
+    const res = await request(app).get('/v1/fragments').auth('user1@email.com', 'password1');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.fragments).toEqual(
+      expect.not.objectContaining({
+        type: expect.any(String),
+        created: expect.any(String),
+        updated: expect.any(String),
+        size: expect.any(Number),
+        ownerId: expect.any(String),
+        id: expect.any(String),
+      })
+    );
+    expect(res.body.fragments).toEqual(expect.arrayContaining([expect.any(String)]));
   });
 });
