@@ -41,7 +41,7 @@ module.exports.getOne = async (req, res, next) => {
       var fragment = new Fragment(fMetadata);
     } catch (error) {
       logger.error(error);
-      res.status(404).send(createErrorResponse(404, error.message));
+      res.status(404).send(createErrorResponse(404, 'not found'));
     }
     //const type = fragment.mimeType;
     if (ext) {

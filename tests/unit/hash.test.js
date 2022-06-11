@@ -4,7 +4,7 @@ describe('hash()', () => {
   const email = 'user1@example.com';
 
   test('email addresses should get hashed using sha256 to hex strings', () => {
-    const hashedEmail = 'b36a83701f1c3191e19722d6f90274bc1b5501fe69ebf33313e440fe4b0fe210';
+    const hashedEmail = 'b36a8370'; //1f1c3191e19722d6f90274bc1b5501fe69ebf33313e440fe4b0fe210'; //removed to match reuced size
     expect(hash(email)).toEqual(hashedEmail);
   });
 
