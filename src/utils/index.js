@@ -1,6 +1,7 @@
 const logger = require('../logger');
 // eslint-disable-next-line no-unused-vars
 const { Fragment } = require('../model/fragment');
+//const { createErrorResponse } = require('../response');
 
 const validTypes = [
   `text/plain`,
@@ -24,7 +25,7 @@ const convertType = async (ext, /**@type {Fragment} */ fragment) => {
       logger.debug(`converted data: ${data}`);
     } else {
       logger.debug(`no conversion for ${type}`);
-      throw new Error(`no conversion for ${type}`);
+      throw new Error('Unsupported extension type');
     }
   }
   return { type, data };

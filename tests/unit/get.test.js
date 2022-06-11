@@ -20,8 +20,6 @@ describe('GET /v1/fragments', () => {
     expect(res.body.status).toBe('ok');
     expect(Array.isArray(res.body.fragments)).toBe(true);
   });
-
-  // TODO: we'll need to add tests to check the contents of the fragments array later
 });
 
 describe('GET /v1/fragments/?expand=1 || expand value not included, GET a converted fragment(GET /v1/fragments/:id(.txt)', () => {
@@ -114,3 +112,5 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
     expect(res.statusCode).toBe(415);
   });
 });
+
+describe('GET /v1/fragments/:id/info', async () => {});

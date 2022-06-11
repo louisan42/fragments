@@ -10,11 +10,6 @@ const { getAll, getOne } = require('./get');
 // Create a router on which to mount our API endpoints
 const router = express.Router();
 
-// Define our first route, which will be: GET /v1/fragments
-router.get('/fragments', getAll);
-// Define
-router.get('/fragments/:id', getOne);
-// Other routes will go here later on...
 // Support sending various Content-Types on the body up to 5M in size
 const rawBody = () =>
   express.raw({
@@ -29,7 +24,12 @@ const rawBody = () =>
     },
   });
 
+// Define our first route, which will be: GET /v1/fragments
+router.get('/fragments', getAll);
+
+router.get('/fragments/:id', getOne);
 // Use a raw body parser for POST, which will give a `Buffer` Object or `{}` at `req.body`
+router.put('/fragments/:id', rawBody(), require('./put'));
 router.post('/fragments', rawBody(), require('./post'));
 
 module.exports = router;

@@ -20,7 +20,7 @@ module.exports.getAll = async (req, res) => {
 
 // Get a single fragment by id
 // GET /v1/fragments/:id(.ext) optional extension
-module.exports.getOne = async (req, res) => {
+module.exports.getOne = async (req, res, next) => {
   try {
     const user = req.user;
     let id = req.params.id;
@@ -30,10 +30,14 @@ module.exports.getOne = async (req, res) => {
       id = id.substring(0, dotIndex);
     }
     logger.debug(`id: ${id}\next: ${ext}\nuser: ${user}`);
-    const fMetadata = await Fragment.byId(user, id);
+    try {
+      const fMetadata = await Fragment.byId(user, id);
 
-    const fragment = new Fragment(fMetadata);
-
+      var fragment = new Fragment(fMetadata);
+    } catch (error) {
+      logger.error(error);
+      res.status(404).send(createErrorResponse(404, error.message));
+    }
     //const type = fragment.mimeType;
     if (ext) {
       try {
@@ -42,7 +46,7 @@ module.exports.getOne = async (req, res) => {
         res.status(200).send(data);
       } catch (error) {
         logger.error(error);
-        res.status(415).send(createErrorResponse(415, 'Unsupported extension type'));
+        res.status(415).send(createErrorResponse(415, error.message));
       }
     } else {
       var fData = await fragment.getData();
@@ -53,6 +57,6 @@ module.exports.getOne = async (req, res) => {
     logger.debug(`type: ${type ? type : fragment.type}\ndata: ${data ? data : fData}`);
   } catch (error) {
     logger.debug(error);
-    res.status(404).send(createErrorResponse(404, 'Fragment not found'));
+    next(error);
   }
 };
