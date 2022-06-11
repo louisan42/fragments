@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
       await fragment.setData(data);
       res.location(`${process.env.API_URL}/v1/fragments/${id}`);
       logger.debug(`saved fragment id: ${id}\ndata: ${data}`);
-      res.status(200).send(createSuccessResponse({ fragment: fragment }));
+      res.status(200).send(createSuccessResponse({ fragment, formats: fragment.formats }));
     } else {
       res.status(400).send(createErrorResponse(415, 'Content-Type does not match fragment type'));
     }

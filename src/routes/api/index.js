@@ -6,7 +6,7 @@
 const express = require('express');
 const contentType = require('content-type');
 const { Fragment } = require('../../model/fragment');
-const { getAll, getOne } = require('./get');
+const { getAll, getOne, getInfo } = require('./get');
 // Create a router on which to mount our API endpoints
 const router = express.Router();
 
@@ -28,6 +28,7 @@ const rawBody = () =>
 router.get('/fragments', getAll);
 
 router.get('/fragments/:id', getOne);
+router.get('/fragments/:id/info', getInfo);
 // Use a raw body parser for POST, which will give a `Buffer` Object or `{}` at `req.body`
 router.put('/fragments/:id', rawBody(), require('./put'));
 router.post('/fragments', rawBody(), require('./post'));

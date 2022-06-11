@@ -113,4 +113,35 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
   });
 });
 
-describe('GET /v1/fragments/:id/info', async () => {});
+describe('GET /v1/fragments/:id/info', () => {
+  // if fragment does not exist, it should return 404
+  test('non-existent fragment returns 404', async () => {
+    const res = await request(app)
+      .get(`/v1/fragments/:1234/info`)
+      .auth('user1@email.com', 'password1');
+    expect(res.statusCode).toBe(404);
+  });
+  // if fragment exists, it should return a fragment metadata
+  test('authenticated users get a fragment info', async () => {
+    const response = await request(app)
+      .post('/v1/fragments/')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/plain')
+      .send(`This is a fragment`);
+
+    const res = await request(app)
+      .get(`/v1/fragments/${response.body.fragments.id}/info`)
+      .auth('user1@email.com', 'password1');
+    expect(res.statusCode).toBe(200);
+    expect(res.body.fragment).toEqual(
+      expect.objectContaining({
+        type: expect.any(String),
+        created: expect.any(String),
+        updated: expect.any(String),
+        size: expect.any(Number),
+        ownerId: expect.any(String),
+        id: expect.any(String),
+      })
+    );
+  });
+});
