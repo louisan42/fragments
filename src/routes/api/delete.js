@@ -8,6 +8,8 @@ module.exports = async (req, res, next) => {
     const { id } = req.params;
     try {
       await Fragment.byId(user, id);
+
+      Fragment.delete(user, id);
       res.status(200).send(createSuccessResponse());
     } catch (error) {
       logger.error(error);
