@@ -1,5 +1,6 @@
 // Use https://www.npmjs.com/package/nanoid to create unique IDs
-const { nanoid } = require('nanoid');
+//const { nanoid } = require('nanoid');
+const { randomUUID } = require('crypto');
 // Use https://www.npmjs.com/package/content-type to create/parse Content-Type headers
 const contentType = require('content-type');
 
@@ -32,7 +33,7 @@ class Fragment {
     } else {
       this.ownerId = ownerId;
     }
-    this.id = id || nanoid();
+    this.id = id || randomUUID();
     this.created = created || new Date().toISOString();
     this.updated = updated || new Date().toISOString();
     if (typeof size === 'number') {
