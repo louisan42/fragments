@@ -28,7 +28,7 @@ WORKDIR /app
 COPY --chown=node:node package.json package-lock.json ./
 
 
-# Install node dependencies defined in package.json
+# Install node dependencies defined in package-lock.json
 RUN npm ci --only=production
 
 ######################################################################################
