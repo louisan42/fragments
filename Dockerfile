@@ -45,7 +45,7 @@ COPY --chown=node:node --from=dependencies /app /app
 COPY --chown=node:node ./src ./src
 
 # Install curl
-RUN apk --no-cache add curl=latest
+RUN apk --no-cache add curl=7.68.0
 
 ######################################################################################
 
