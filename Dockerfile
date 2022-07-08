@@ -47,6 +47,9 @@ COPY --chown=node:node --from=dependencies /app /app
 # Copy src code into image
 COPY --chown=node:node ./src ./src
 
+# Copy our HTPASSWD file
+COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
+
 ######################################################################################
 
 #Stage 2: Run the application on nginx web server
