@@ -2,7 +2,7 @@
 
 #Stage 0: Install dependencies
 # Use node version 16.15.
-FROM node:16.15.0 AS dependencies
+FROM node:16.16.0 AS dependencies
 
 
 LABEL maintainer="Louis Amoah-Nuamah <lamoah-nuamah@myseneca.ca>" \
@@ -34,7 +34,10 @@ RUN npm ci --only=production
 ######################################################################################
 
 #Stage 1: Use dependencies to build the application
-FROM node:16.15-alpine@sha256:c785e617c8d7015190c0d41af52cc69be8a16e3d9eb7cb21f0bb58bcfca14d6b AS builder
+FROM node:16.16-alpine@sha256:c785e617c8d7015190c0d41af52cc69be8a16e3d9eb7cb21f0bb58bcfca14d6b AS builder
+
+# Install curl
+RUN apk --no-cache add curl=7.83.1-r2
 
 WORKDIR /app
 
@@ -43,9 +46,6 @@ COPY --chown=node:node --from=dependencies /app /app
 
 # Copy src code into image
 COPY --chown=node:node ./src ./src
-
-# Install curl
-RUN apk --no-cache add curl=7.68.0
 
 ######################################################################################
 
