@@ -32,9 +32,9 @@ module.exports.getOne = async (req, res, next) => {
     const dotIndex = id.indexOf('.');
     if (dotIndex > 0) {
       var ext = id.split('.').pop();
-      id = id.substring(0, dotIndex);
+      var splitId = id.substring(0, dotIndex);
     }
-    logger.debug(`id: ${id}\next: ${ext}\nuser: ${user}`);
+    logger.debug(`id: ${splitId}\next: ${ext}\nuser: ${user}`);
     try {
       const fMetadata = await Fragment.byId(user, id);
 

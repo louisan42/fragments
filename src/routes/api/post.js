@@ -18,6 +18,13 @@ module.exports = async (req, res, next) => {
         type: type,
         size: Buffer.byteLength(data),
       });
+
+      //add extension to markdown
+      if (type.includes('markdown')) {
+        fragment.id = `${fragment.id}.md`;
+      } else if (type.includes('plain')) {
+        fragment.id = `${fragment.id}.txt`;
+      }
       await fragment.save();
       await fragment.setData(data);
       const location = `${process.env.API_URL}/v1/fragments/${fragment.id}`;
