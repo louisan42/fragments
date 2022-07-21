@@ -84,6 +84,20 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
     expect(res.text).toBe('This is a fragment');
   });
 
+  test(`convert .md to html`, async () => {
+    const response = await request(app)
+      .post('/v1/fragments/')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'text/markdown')
+      .send('# h1 header');
+
+    const res = await request(app)
+      .get(`/v1/fragments/${response.body.fragments.id}.md`)
+      .auth('user1@email.com', 'password1');
+    expect(res.statusCode).toBe(200);
+    expect(res.text).toBe('<h1>h1 header</h1>\n');
+  });
+
   test('convert id without extension', async () => {
     const response = await request(app)
       .post('/v1/fragments/')

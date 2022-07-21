@@ -29,22 +29,24 @@ module.exports.getOne = async (req, res, next) => {
   try {
     const user = req.user;
     let { id } = req.params;
+
     const dotIndex = id.indexOf('.');
     if (dotIndex > 0) {
       var ext = id.split('.').pop();
-      var splitId = id.substring(0, dotIndex);
+      id = id.substring(0, dotIndex);
     }
-    logger.debug(`id: ${splitId}\next: ${ext}\nuser: ${user}`);
+
     try {
-      const fMetadata = await Fragment.byId(user, id);
+      var fMetadata = await Fragment.byId(user, id);
 
       var fragment = new Fragment(fMetadata);
     } catch (error) {
       logger.error(error);
       res.status(404).send(createErrorResponse(404, 'not found'));
     }
-    //const type = fragment.mimeType;
-    if (ext) {
+
+    logger.debug(`id: ${id}\next: ${ext}\nuser: ${user}`);
+    if (ext || fMetadata.type == 'text/markdown') {
       try {
         var { type, data } = await convertType(ext, fragment);
         res.setHeader('Content-Type', type);
