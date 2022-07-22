@@ -6,6 +6,7 @@ const md = require('markdown-it')('default');
 
 const validTypes = [
   `text/plain`,
+  `text/plain; charset=utf-8`,
   `text/markdown`,
   `text/html`,
   `application/json`,
