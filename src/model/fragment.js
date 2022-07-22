@@ -57,7 +57,7 @@ class Fragment {
     try {
       return await listFragments(ownerId, expand);
     } catch (error) {
-      logger.error(error);
+      throw new Error(error);
     }
   }
 
@@ -76,7 +76,6 @@ class Fragment {
       }
       return f;
     } catch (error) {
-      logger.error(error);
       throw new Error(error);
     }
   }
@@ -91,7 +90,7 @@ class Fragment {
     try {
       return deleteFragment(ownerId, id);
     } catch (error) {
-      logger.error(error);
+      throw new Error(error);
     }
   }
 
@@ -105,7 +104,7 @@ class Fragment {
       this.updated = new Date().toISOString();
       return writeFragment(this);
     } catch (error) {
-      logger.error(error);
+      throw new Error(error);
     }
   }
 
@@ -120,7 +119,7 @@ class Fragment {
 
       return data;
     } catch (error) {
-      logger.error(error);
+      throw new Error(error);
     }
   }
 
@@ -138,7 +137,7 @@ class Fragment {
       this.updated = new Date().toISOString();
       return await writeFragmentData(this.ownerId, this.id, data);
     } catch (error) {
-      logger.error(error);
+      throw new Error(error);
     }
   }
 
