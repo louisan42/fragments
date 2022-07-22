@@ -250,5 +250,13 @@ describe('Fragment class', () => {
       await Fragment.delete('1234', fragment.id);
       expect(() => Fragment.byId('1234', fragment.id)).rejects.toThrow();
     });
+
+    test('wrong id on delete to throw', async () => {
+      const fragment = new Fragment({ ownerId: '1234', type: 'text/plain', size: 0 });
+      await fragment.save();
+      await fragment.setData(Buffer.from('a'));
+
+      expect(() => Fragment.delete('1234', 'wrong-id')).rejects.toThrow();
+    });
   });
 });

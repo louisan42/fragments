@@ -13,7 +13,6 @@ const {
   listFragments,
   deleteFragment,
 } = require('./data');
-const logger = require('../logger');
 
 const { validTypes } = require('../utils');
 
