@@ -18,7 +18,7 @@ describe('PUT /fragments/:id', () => {
       .send('This is a fragment');
 
     const res = await request(app)
-      .put(`/v1/fragments/${response.body.fragments.id}`)
+      .put(`/v1/fragments/${response.body.fragment.id}`)
       .set('Content-Type', 'image/jpg')
       .auth('user1@email.com', 'password1')
       .send('This is an update');
@@ -47,7 +47,7 @@ describe('PUT /fragments/:id', () => {
       .set('Content-Type', 'text/plain')
       .send('This is a fragment');
     const res = await request(app)
-      .put(`/v1/fragments/${response.body.fragments.id}`)
+      .put(`/v1/fragments/${response.body.fragment.id}`)
       .auth('user1@email.com', 'password1')
       .set('Content-Type', 'text/plain')
       .send('This is an update');
@@ -55,7 +55,7 @@ describe('PUT /fragments/:id', () => {
     expect(res.statusCode).toBe(200);
 
     expect(Date.parse(await res.body.fragment.updated)).toBeGreaterThan(
-      Date.parse(response.body.fragments.updated)
+      Date.parse(response.body.fragment.updated)
     );
   });
 });

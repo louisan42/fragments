@@ -30,13 +30,13 @@ describe('DELETE /fragments/:id', () => {
       .send('This is a fragment');
 
     const res = await request(app)
-      .delete(`/v1/fragments/${response.body.fragments.id}`)
+      .delete(`/v1/fragments/${response.body.fragment.id}`)
       .auth('user1@email.com', 'password1')
       .expect(200);
     expect(res.body.status).toBe('ok');
 
     const dRes = await request(app)
-      .get(`/v1/fragments/${response.body.fragments.id}`)
+      .get(`/v1/fragments/${response.body.fragment.id}`)
       .auth('user1@email.com', 'password1');
     expect(dRes.statusCode).toBe(404);
   });

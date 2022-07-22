@@ -78,7 +78,7 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
       .send(`This is a fragment`);
 
     const res = await request(app)
-      .get(`/v1/fragments/${response.body.fragments.id}.txt`)
+      .get(`/v1/fragments/${response.body.fragment.id}.txt`)
       .auth('user1@email.com', 'password1');
     expect(res.statusCode).toBe(200);
     expect(res.text).toBe('This is a fragment');
@@ -92,7 +92,7 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
       .send('# h1 header');
 
     const res = await request(app)
-      .get(`/v1/fragments/${response.body.fragments.id}.md`)
+      .get(`/v1/fragments/${response.body.fragment.id}.md`)
       .auth('user1@email.com', 'password1');
     expect(res.statusCode).toBe(200);
     expect(res.text).toBe('<h1>h1 header</h1>\n');
@@ -106,7 +106,7 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
       .send(`This is a fragment`);
 
     const res = await request(app)
-      .get(`/v1/fragments/${response.body.fragments.id}`)
+      .get(`/v1/fragments/${response.body.fragment.id}`)
       .auth('user1@email.com', 'password1');
     expect(res.statusCode).toBe(200);
     expect(res.text).toBe('This is a fragment');
@@ -121,7 +121,7 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
       .send(`This is a fragment`);
 
     const res = await request(app)
-      .get(`/v1/fragments/${response.body.fragments.id}.json`)
+      .get(`/v1/fragments/${response.body.fragment.id}.json`)
       .auth('user1@email.com', 'password1');
     expect(res.statusCode).toBe(415);
   });
@@ -144,7 +144,7 @@ describe('GET /v1/fragments/:id/info', () => {
       .send(`This is a fragment`);
 
     const res = await request(app)
-      .get(`/v1/fragments/${response.body.fragments.id}/info`)
+      .get(`/v1/fragments/${response.body.fragment.id}/info`)
       .auth('user1@email.com', 'password1');
     expect(res.statusCode).toBe(200);
     expect(res.body.fragment).toEqual(
