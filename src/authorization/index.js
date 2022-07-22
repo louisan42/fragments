@@ -2,9 +2,15 @@
 
 // Prefer Amazon Cognito
 if (process.env.AWS_COGNITO_POOL_ID && process.env.AWS_COGNITO_CLIENT_ID) {
-  module.exports = require('./cognito');
+  // module.exports = require('./cognito');
 
-  module.exports = require('./cognito');
+  // uncomment the following line to use basic-auth in development
+  if (process.env.HTPASSWD_FILE && process.NODE_ENV !== 'production') {
+    module.exports = require('./basic-auth');
+  } else {
+    module.exports = require('./cognito');
+  }
+  /////////////////////////////////////////////////////////////
 }
 // Also allow for an .htpasswd file to be used, but not in production
 else if (process.env.HTPASSWD_FILE && process.NODE_ENV !== 'production') {

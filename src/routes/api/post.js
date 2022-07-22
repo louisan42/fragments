@@ -29,7 +29,7 @@ module.exports = async (req, res, next) => {
       res
         .location(location)
         .status(201)
-        .send(createSuccessResponse({ fragments: fragment }));
+        .send(createSuccessResponse({ fragment: fragment }));
     } catch (error) {
       logger.error(error);
       next(error);
