@@ -26,6 +26,8 @@ WORKDIR /app
 
 # Copy the package.json and package-lock.json files to /app
 COPY --chown=node:node package.json package-lock.json ./
+# Copy our HTPASSWD file
+COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
 
 
 # Install node dependencies defined in package-lock.json
