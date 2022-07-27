@@ -25,7 +25,7 @@ module.exports.getAll = async (req, res, next) => {
 
 // Get a single fragment by id
 // GET /v1/fragments/:id(.ext) optional extension
-module.exports.getOne = async (req, res, next) => {
+module.exports.getOne = async (req, res) => {
   try {
     const user = req.user;
     let { id } = req.params;
@@ -36,14 +36,14 @@ module.exports.getOne = async (req, res, next) => {
       id = id.substring(0, dotIndex);
     }
 
-    try {
-      var fMetadata = await Fragment.byId(user, id);
+    //try {
+    var fMetadata = await Fragment.byId(user, id);
 
-      var fragment = new Fragment(fMetadata);
-    } catch (error) {
-      logger.error(error);
-      res.status(404).send(createErrorResponse(404, 'not found'));
-    }
+    var fragment = new Fragment(fMetadata);
+    // } catch (error) {
+    //logger.error(error);
+    //res.status(404).send(createErrorResponse(404, 'not found'));
+    // }
 
     logger.debug(`id: ${id}\next: ${ext}\nuser: ${user}`);
     if (ext || fMetadata.type == 'text/markdown') {
@@ -63,8 +63,9 @@ module.exports.getOne = async (req, res, next) => {
 
     logger.debug(`type: ${type ? type : fragment.type}\ndata: ${data ? data : fData}`);
   } catch (error) {
+    res.status(404).send(createErrorResponse(404, 'not found'));
     logger.debug(error);
-    next(error);
+    //next(error);
   }
 };
 
