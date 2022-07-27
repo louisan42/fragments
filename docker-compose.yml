@@ -13,3 +13,5 @@ services:
       - AWS_COGNITO_POOL_ID
       - AWS_COGNITO_CLIENT_ID
       - HTPASSWD
+      - AWS_S3_BUCKET_NAME=${AWS_S3_BUCKET_NAME:-fragments}
+      - API_URL
