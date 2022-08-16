@@ -3,6 +3,7 @@ const logger = require('../logger');
 const { Fragment } = require('../model/fragment');
 //const { createErrorResponse } = require('../response');
 const md = require('markdown-it')('default');
+const sharp = require('sharp');
 
 const validTypes = [
   `text/plain`,
@@ -23,22 +24,35 @@ const convertType = async (ext, /**@type {Fragment} */ fragment) => {
   const fragmentData = await fragment.getData();
   if (ext === 'txt') {
     type = 'text/plain';
-    if (fragment.formats.includes(type)) {
-      data = fragmentData.toString();
-      logger.debug(`converted data: ${data}`);
-    } else {
-      logger.debug(`no conversion for ${type}`);
-      throw new Error('Unsupported extension type');
-    }
-  } else if (ext === 'md' || fragment.type == 'text/markdown') {
-    type = 'text/markdown';
-    if (fragment.formats.includes(type)) {
-      data = md.render(fragmentData.toString());
-      logger.debug(`converted data: ${data}`);
-    } else {
-      logger.debug(`no conversion for ${type}`);
-      throw new Error('Unsupported extension type');
-    }
+    data = fragmentData.toString();
+    logger.debug(`converted data: ${data}`);
+  } else if (ext === 'json') {
+    type = 'application/json';
+    data = fragmentData.toString();
+    logger.debug(`converted data: ${data}`);
+  } else if (ext === 'md' || ext === 'html') {
+    type = 'text/html';
+    data = md.render(fragmentData.toString());
+    logger.debug(`converted data: ${data}`);
+  } else if (ext === 'png') {
+    type = 'image/png';
+    data = await sharp(fragmentData).png().toBuffer();
+    logger.debug(`image converted to png`);
+  } else if (ext === 'jpg' || ext === 'jpeg') {
+    type = 'image/jpeg';
+    data = await sharp(fragmentData).jpeg().toBuffer();
+    logger.debug(`image converted to jpeg`);
+  } else if (ext === 'webp') {
+    type = 'image/webp';
+    data = await sharp(fragmentData).webp().toBuffer();
+    logger.debug(`image converted to webp`);
+  } else if (ext === 'gif') {
+    type = 'image/gif';
+    data = await sharp(fragmentData).gif().toBuffer();
+    logger.debug(`image converted to gif`);
+  } else {
+    logger.debug(`no conversion for ${type}`);
+    throw new Error('Unsupported extension type');
   }
   logger.info(`type from fnc: ${type}`);
   return { type, data };

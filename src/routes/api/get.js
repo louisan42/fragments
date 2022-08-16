@@ -46,11 +46,15 @@ module.exports.getOne = async (req, res) => {
     // }
 
     logger.debug(`id: ${id}\next: ${ext}\nuser: ${user}`);
-    if (ext || fMetadata.type == 'text/markdown') {
+    if (ext) {
       try {
         var { type, data } = await convertType(ext, fragment);
-        res.setHeader('Content-Type', type);
-        res.status(200).send(data);
+        res.removeHeader('Content-Type');
+        res.set('Content-Type', type);
+        logger.debug(`type: ${type}`);
+        type.startsWith('text/')
+          ? res.status(200).send(Buffer.from(data))
+          : res.status(200).send(data);
       } catch (error) {
         logger.error(error);
         res.status(415).send(createErrorResponse(415, error.message));
@@ -61,7 +65,7 @@ module.exports.getOne = async (req, res) => {
       res.status(200).send(fData);
     }
 
-    logger.debug(`type: ${type ? type : fragment.type}\ndata: ${data ? data : fData}`);
+    //logger.debug(`type: ${type ? type : fragment.type}\ndata: ${data ? data : fData}`);
   } catch (error) {
     res.status(404).send(createErrorResponse(404, 'not found'));
     logger.debug(error);

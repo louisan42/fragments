@@ -5,6 +5,8 @@ const request = require('supertest');
 
 const app = require('../../src/app');
 
+const fs = require('fs');
+
 describe('GET /v1/fragments', () => {
   // If the request is missing the Authorization header, it should be forbidden
   test('unauthenticated requests are denied', () => request(app).get('/v1/fragments').expect(401));
@@ -92,13 +94,31 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
       .send('# h1 header');
 
     const res = await request(app)
-      .get(`/v1/fragments/${response.body.fragment.id}.md`)
+      .get(`/v1/fragments/${response.body.fragment.id}.html`)
       .auth('user1@email.com', 'password1');
     expect(res.statusCode).toBe(200);
+    expect(res.type).toBe('text/html');
+
     expect(res.text).toBe('<h1>h1 header</h1>\n');
   });
 
-  test('convert id without extension', async () => {
+  test(`convert .json to text`, async () => {
+    const response = await request(app)
+      .post('/v1/fragments/')
+      .auth('user1@email.com', 'password1')
+      .set('Content-Type', 'application/json')
+      .send({ message: 'hello world' });
+
+    const res = await request(app)
+      .get(`/v1/fragments/${response.body.fragment.id}.json`)
+      .auth('user1@email.com', 'password1');
+    expect(res.statusCode).toBe(200);
+    expect(res.type).toBe('application/json');
+
+    expect(res.text).toBe('{"message":"hello world"}');
+  });
+
+  test('render id without extension', async () => {
     const response = await request(app)
       .post('/v1/fragments/')
       .auth('user1@email.com', 'password1')
@@ -121,12 +141,74 @@ describe('GET /v1/fragments/?expand=1 || expand value not included, GET a conver
       .send(`This is a fragment`);
 
     const res = await request(app)
-      .get(`/v1/fragments/${response.body.fragment.id}.json`)
+      .get(`/v1/fragments/${response.body.fragment.id}.docx`)
       .auth('user1@email.com', 'password1');
     expect(res.statusCode).toBe(415);
   });
 });
+// conversion test to increase test coverage
 
+test('image uploads', async () => {
+  const response = await request(app)
+    .post('/v1/fragments/')
+    .auth('user1@email.com', 'password1')
+    .set('Content-type', 'image/jpeg')
+    .send(fs.readFileSync(`${__dirname}/testUploads/R.jpeg`));
+  expect(response.status).toBe(201);
+
+  const res = await request(app)
+    .get(`/v1/fragments/${response.body.fragment.id}`)
+    .auth('user1@email.com', 'password1');
+  expect(res.type).toBe('image/jpeg');
+  expect(res.statusCode).toBe(200);
+  expect(res.body).toEqual(Buffer.from(fs.readFileSync(`${__dirname}/testUploads/R.jpeg`)));
+});
+
+test('convert webp to gif', async () => {
+  const response = await request(app)
+    .post('/v1/fragments/')
+    .auth('user1@email.com', 'password1')
+    .set('Content-type', 'image/webp')
+    .send(fs.readFileSync(`${__dirname}/testUploads/mountains.webp`));
+  expect(response.status).toBe(201);
+
+  const res = await request(app)
+    .get(`/v1/fragments/${response.body.fragment.id}.gif`)
+    .auth('user1@email.com', 'password1');
+  expect(res.type).toBe('image/gif');
+  expect(res.statusCode).toBe(200);
+});
+
+test('convert gif to jpeg', async () => {
+  const response = await request(app)
+    .post('/v1/fragments/')
+    .auth('user1@email.com', 'password1')
+    .set('Content-type', 'image/gif')
+    .send(fs.readFileSync(`${__dirname}/testUploads/avocado.gif`));
+  expect(response.status).toBe(201);
+
+  const res = await request(app)
+    .get(`/v1/fragments/${response.body.fragment.id}.jpg`)
+    .auth('user1@email.com', 'password1');
+  expect(res.type).toBe('image/jpeg');
+  expect(res.statusCode).toBe(200);
+});
+
+test('convert jpeg to png', async () => {
+  const response = await request(app)
+    .post('/v1/fragments/')
+    .auth('user1@email.com', 'password1')
+    .set('Content-type', 'image/jpeg')
+    .send(fs.readFileSync(`${__dirname}/testUploads/R.jpeg`));
+  expect(response.status).toBe(201);
+
+  const res = await request(app)
+    .get(`/v1/fragments/${response.body.fragment.id}.png`)
+    .auth('user1@email.com', 'password1');
+  expect(res.type).toBe('image/png');
+  expect(res.statusCode).toBe(200);
+});
+// end of region
 describe('GET /v1/fragments/:id/info', () => {
   // if fragment does not exist, it should return 404
   test('non-existent fragment returns 404', async () => {

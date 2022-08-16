@@ -7,7 +7,7 @@ module.exports = async (req, res, next) => {
   const type = req.headers['content-type'];
   const user = req.user;
 
-  logger.debug(`type: ${type}\nuser: ${user}\ndata: ${data}`);
+  logger.debug(`type: ${type}\nuser: ${user}`);
   if (!Fragment.isSupportedType(type)) {
     res.status(415).send(createErrorResponse(415, 'Unsupported content type'));
     logger.info(`Unsupported content type: ${type}`);
