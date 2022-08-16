@@ -1,8 +1,8 @@
 # docker-compose.offline.yml
-
 services:
   # Fragments microservice API server
   fragments:
+    container_name: fragments-container
     # Use a proper init process (tini)
     init: true
     # Build the Docker Image using the Dockerfile

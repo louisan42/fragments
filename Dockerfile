@@ -31,7 +31,10 @@ COPY --chown=node:node ./tests/.htpasswd ./tests/.htpasswd
 
 
 # Install node dependencies defined in package-lock.json
-RUN npm ci --only=production
+RUN npm ci --only=production  && \
+npm uninstall sharp && \
+npm install --platform=linux --libc=musl sharp@0.30.7
+
 
 ######################################################################################
 
